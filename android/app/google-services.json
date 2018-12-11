@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "562478296401",
+    "firebase_url": "https://guitar-grind.firebaseio.com",
+    "project_id": "guitar-grind",
+    "storage_bucket": "guitar-grind.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:562478296401:android:cfbe8dc8af920f26",
+        "android_client_info": {
+          "package_name": "com.example.monthlymusicchallenge"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "562478296401-glc6g813v7mq0r00ohjhng6v27oqpsde.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1YNHYK0K-DR-Fnb_WkQu7Xf0MmvQ-I_o"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
