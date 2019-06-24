@@ -3,54 +3,57 @@ import 'package:monthly_music_challenge/challenge-page.dart';
 import 'package:monthly_music_challenge/training-page.dart';
 import 'package:monthly_music_challenge/statistics-page.dart';
 
-void main() {
-  runApp(new MaterialApp(
-    color: Colors.greenAccent,
-    home: new HomePage(),
-    routes: <String, WidgetBuilder>{
-      "/TrainingPage": (BuildContext context) => new TrainingPage(),
-      "/ChallengePage": (BuildContext context) => new ChallengePage(),
-      "/StatisticsPage": (BuildContext context) => new StatisticsPage()
-    },
-  ));
-}
+//export PATH="$PATH:`pwd`/flutter/bin" add flutter to path from terminal
+void main() => runApp(GuitarApp());
 
-class HomePage extends StatelessWidget {
+class GuitarApp extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.greenAccent,
-        body: Container(
-          child: Center(
-            child: ButtonBar(
-              alignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                FloatingActionButton(
-                    heroTag: null,
-                    onPressed: () {
-                      Navigator.of(context).pushNamed("/StatisticsPage");
-                    },
-                    child: Image(image: AssetImage("assets/statistics.png"))),
-                FloatingActionButton(
-                    heroTag: null,
-                    onPressed: () {
-                      Navigator.of(context).pushNamed("/TrainingPage");
-                    },
-                    child: Image(image: AssetImage("assets/guitar.png"))),
-                FloatingActionButton(
-                    heroTag: null,
-                    onPressed: () {
-                      Navigator.of(context).pushNamed("/ChallengePage");
-                    },
-                    child: Image(image: AssetImage("assets/clipboard.png"))),
-              ],
-            ),
-          ),
-        ));
+  State<StatefulWidget> createState() {
+    return GuitarAppState();
   }
 }
 
-
+class GuitarAppState extends State<GuitarApp> {
+  int _selectedPage = 0;
+  final _pageOptions = [ChallengePage(), StatisticsPage(1)];
+  
+  @override
+  Widget build(BuildContext context) {
+    final terminalTextTheme = Theme.of(context).textTheme.apply(
+      bodyColor: Color(0xFF41FF00),
+      displayColor: Color(0xFF41FF00)
+    );
+    return MaterialApp(
+      title: "Guitar App",
+      theme: ThemeData(
+        primaryColor: Color(0xFF2D333F),
+        textTheme: terminalTextTheme),
+      home: Scaffold(
+        backgroundColor: Color(0xFF2D333F),
+        appBar: AppBar(
+          title: Text("Guitar App"),
+          textTheme: terminalTextTheme,
+        ),
+        body: _pageOptions[_selectedPage],
+        bottomNavigationBar: BottomNavigationBar(
+          selectedItemColor: Colors.white,
+          backgroundColor: Color(0xFF2D333F),
+          currentIndex: _selectedPage,
+          onTap: (int index) {
+            setState(() {
+              _selectedPage = index;
+            });
+          },
+          items: [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home), title: Text("My Excercises")),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.event_note), title: Text("Overview"))
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 

@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
 import 'package:monthly_music_challenge/models/challenge.dart';
 import 'package:monthly_music_challenge/database/DBHelper.dart';
+import 'package:monthly_music_challenge/training-page.dart';
 
 class StatisticsPage extends StatefulWidget {
+  final int challengeID;
+  StatisticsPage(this.challengeID);
+
   @override
   _StatisticsPageState createState() => new _StatisticsPageState();
 }
@@ -12,7 +17,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
   final GlobalKey<AnimatedCircularChartState> _chartKey =
       new GlobalKey<AnimatedCircularChartState>();
   final Size _chartSize = const Size(250.0, 250.0);
-
   Color labelColor = Colors.white;
   bool dataIsLoaded = false;
   double completedPercentage;
@@ -29,16 +33,14 @@ class _StatisticsPageState extends State<StatisticsPage> {
   double remainingPercentage;
   double completedHours;
   double remainingHours;
-  
+
   String challengeName;
   String challengeDesc;
   String challengeCategory;
 
   @override
   void initState() {
-    print("init state called");
-
-    fetchChallengeFromDatabase().then((value) {
+    fetchChallengeFromDatabase(widget.challengeID).then((value) {
       setState(() {
         double hoursIn = double.parse(value.completedHours);
         double goal = double.parse(value.goalHours);
@@ -46,12 +48,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
         this.completedHours = hoursIn;
         this.remainingHours = goal - hoursIn;
-      
+
         this.completedPercentage = (hoursIn / goal) * 100;
         this.remainingPercentage = 100 - completedPercentage;
         //completed percentage as an integer
         completed = this.completedPercentage.truncate();
-
 
         // extract decimals from completed hour
         double number = completedHours;
@@ -66,18 +67,12 @@ class _StatisticsPageState extends State<StatisticsPage> {
         double fractionalRemaining = remainingTime - remainingHours;
 
         this.hoursToGo = remainingHours;
-        double remainingMin = (60/100) * (fractionalRemaining * 100);
+        double remainingMin = (60 / 100) * (fractionalRemaining * 100);
         this.minutesOverHour = remainingMin.truncate();
-        
-        print("minutes: $minutes");
 
         challengeName = value.name;
         challengeDesc = value.description;
-        challengeCategory = value.category;
         dataIsLoaded = true;
-        print(
-          "id is $id"
-            );
       });
     });
 
@@ -86,13 +81,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
   @override
   Widget build(BuildContext context) {
-    print("build called");
-    TextStyle _labelStyle = Theme.of(context)
-        .textTheme
-        .title
-        .merge(new TextStyle(color: labelColor));
     return Scaffold(
-        backgroundColor: Colors.greenAccent,
+        backgroundColor: Color(0xFF2D333F),
+        appBar: AppBar(
+          title: Text("Progress"),
+        ),
         body: Container(
             child: Center(
           child: Column(
@@ -100,7 +93,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
             children: <Widget>[
               new Text(
                 "Your progression in the current challenge",
-                style: TextStyle(fontSize: 20, color: Colors.white),
+                style: TextStyle(fontSize: 20),
                 textAlign: TextAlign.center,
               ),
               progressChart()
@@ -110,60 +103,48 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
   Widget progressChart() {
-    print(
-        "progress chart is called completed percentage: $completedPercentage");
-    /*if(dataIsLoaded){
-      return Center(
-      child: Column(
-        children: <Widget>[
-          Text(this.challengeName),
-          Text(this.challengeDesc),
-          Text(this.challengeCategory),
-          Text(this.completedPercentage.toString()),
-          Text(this.remainingPercentage.toString())
-        ],
-      ),
-    );
-    }
-    else{
-      return Center();
-    }
-    */
     if (dataIsLoaded) {
-      print("if clause");
-
       return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-        Text(
-          this.challengeName,
-          style: TextStyle(fontSize: 25, color: Colors.white),
-          textAlign: TextAlign.center,
-        ),
-        Text(
-          this.challengeDesc,
-          style: TextStyle(fontSize: 20, color: Colors.white),
-          textAlign: TextAlign.center,
-        ),
-        AnimatedCircularChart(
-          key: _chartKey,
-          size: _chartSize,
-          initialChartData:
-              createData(this.completedPercentage, this.remainingPercentage),
-          chartType: CircularChartType.Radial,
-          edgeStyle: SegmentEdgeStyle.round,
-          holeLabel: "$completed %",
-          percentageValues: true,
-        ),
-        Text(
-          "You have trained this challenge for $hours hours $minutes minutes",
-          style: TextStyle(fontSize: 18, color: Colors.white),
-          textAlign: TextAlign.center,
-        ),
-        Text("You have $hoursToGo hours $minutesOverHour remaining")
-      ]);
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Text(
+              this.challengeName,
+              style: TextStyle(fontSize: 25),
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              this.challengeDesc,
+              style: TextStyle(fontSize: 20),
+              textAlign: TextAlign.center,
+            ),
+            AnimatedCircularChart(
+              key: _chartKey,
+              size: _chartSize,
+              initialChartData: createData(
+                  this.completedPercentage, this.remainingPercentage),
+              chartType: CircularChartType.Radial,
+              edgeStyle: SegmentEdgeStyle.round,
+              holeLabel: "$completed %",
+              percentageValues: true,
+            ),
+            Text(
+              "You have trained this challenge for $hours hours $minutes minutes",
+              style: TextStyle(fontSize: 18),
+              textAlign: TextAlign.center,
+            ),
+            Text("You have $hoursToGo hours $minutesOverHour remaining"),
+          MaterialButton(
+            onPressed: (){
+              Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => TrainingPage(widget.challengeID)),
+                    );
+            },
+            child: Text("Continue training"),
+          )
+          ]);
     } else {
-      print("else clause");
       return Center();
     }
   }
@@ -173,7 +154,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
     //hours practiced in percentage
     print(completedPercentage);
     print(remainingPercentage);
-    Color dialColor = Colors.blue;
+    Color dialColor = Color(0xFF41FF00);
+    Color remainingColor = Color(0xF41FF00);
     labelColor = dialColor;
     List<CircularStackEntry> data = <CircularStackEntry>[
       new CircularStackEntry([
@@ -184,7 +166,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
         ),
         new CircularSegmentEntry(
           remaining,
-          Colors.blueGrey[600],
+          remainingColor,
           rankKey: 'remaining',
         ),
       ]),
@@ -194,8 +176,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 }
 
-Future<Challenge> fetchChallengeFromDatabase() async {
+Future<Challenge> fetchChallengeFromDatabase(int id) async {
   var dbHelper = DBHelper();
-  Future<Challenge> challenge = dbHelper.getCurrentChallenge();
+  Future<Challenge> challenge = dbHelper.getChallengeById(id);
   return challenge;
 }

@@ -16,7 +16,7 @@ class DBHelper{
     return _db;
   }
 
-  //Creating a database with name test.dn in your directory
+
   initDb() async {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "guitargrind.db");
@@ -24,36 +24,41 @@ class DBHelper{
     return theDb;
   }
 
-  // Creating a table name Employee with fields
+
   void _onCreate(Database db, int version) async {
     // When creating the db, create the table
     await db.execute(
-    "CREATE TABLE Challenge(id INTEGER PRIMARY KEY, name TEXT, description TEXT, category TEXT,completedHours TEXT, goalHours TEXT)");
+    "CREATE TABLE Challenge(id INTEGER PRIMARY KEY, name TEXT, description TEXT,completedHours TEXT, goalHours TEXT)");
     print("Created tables");
-    await db.execute(
-      "INSERT INTO Challenge(name, description, category, completedHours, goalHours) VALUES('Picking Accuracy', 'Train different scales using alternate picking technique', 'technique', '0', '10')"
-    );
-    print("Created default challenge");
   }
-  
-  // Retrieving employees from Employee Tables
+
   Future<Challenge> getCurrentChallenge() async {
     var dbClient = await db;
     List<Map> list = await dbClient.rawQuery('SELECT * FROM Challenge');
     List<Challenge> challenges = new List();
     for (int i = 0; i < list.length; i++) {
-      challenges.add(new Challenge(list[i]["id"], list[i]["name"], list[i]["description"], list[i]["category"], list[i]["completedHours"], list[i]["goalHours"]));
+      challenges.add(new Challenge(list[i]["id"], list[i]["name"], list[i]["description"], list[i]["completedHours"], list[i]["goalHours"]));
     }
     return challenges[0];
   }
 
-  void saveProgress(double trainingHours) async {
+  Future<List<Challenge>> getAllChallenges() async {
+    var dbClient = await db;
+    List<Map> list = await dbClient.rawQuery('SELECT * FROM Challenge');
+    List<Challenge> challenges = new List();
+    for (int i = 0; i < list.length; i++) {
+      challenges.add(new Challenge(list[i]["id"], list[i]["name"], list[i]["description"], list[i]["completedHours"], list[i]["goalHours"]));
+    }
+    return challenges;
+  }
+
+  void saveProgress(double trainingHours, int id ) async {
     var dbClient = await db;
     getCurrentChallenge().then((value){
       double lastTime = double.parse(value.completedHours);
       String newTime = (lastTime + trainingHours).toString();
       
-      dbClient.rawUpdate("UPDATE Challenge SET completedHours = '$newTime' WHERE id = 1");
+      dbClient.rawUpdate("UPDATE Challenge SET completedHours = '$newTime' WHERE id  = '$id'");
     });
     
   }
@@ -63,17 +68,13 @@ class DBHelper{
     var dbClient = await db;
     await dbClient.transaction((txn) async {
       return await txn.rawInsert(
-          'INSERT INTO Challenge(name, description, category, completedHours, goalHours) VALUES(' +
+          'INSERT INTO Challenge(name, description, completedHours, goalHours) VALUES(' +
               '\'' +
               challenge.name +
               '\'' +
               ',' +
               '\'' +
               challenge.description +
-              '\'' +
-              ',' +
-              '\'' +
-              challenge.category +
               '\'' +
               ',' +
               '\'' +
@@ -91,10 +92,20 @@ class DBHelper{
       var dbClient = await db;
       String name = challenge.name;
       String description = challenge.description;
-      String category = challenge.category;
       String goal = challenge.goalHours;
 
-      dbClient.rawUpdate("UPDATE Challenge SET name = '$name', description = '$description', category = '$category', completedHours = '0', goalHours = '$goal' WHERE id = 1");
+      dbClient.rawUpdate("UPDATE Challenge SET name = '$name', description = '$description', completedHours = '0', goalHours = '$goal' WHERE id = 1");
+  }
+
+  Future<Challenge> getChallengeById(int id) async {
+    var dbClient = await db;
+    List<Map> list = await dbClient.rawQuery("SELECT * FROM Challenge WHERE id  = '$id'");
+      return new Challenge(list[0]["id"], list[0]["name"], list[0]["description"], list[0]["completedHours"], list[0]["goalHours"]);
+  }
+  
+  void deleteChallengeById(int id) async {
+    var dbClient = await db;
+    dbClient.delete("Challenge", where: "id = ?", whereArgs: [id]);
   }
 
 
