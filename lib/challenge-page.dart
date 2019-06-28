@@ -40,7 +40,8 @@ class _ChallengePageState extends State<ChallengePage> {
               initialData: List(),
               builder: (context, snapshot) {
                 return snapshot.hasData
-                    ? Container(child: ListView.builder(
+                    ? Container(
+                        child: ListView.builder(
                         itemCount: snapshot.data.length,
                         itemBuilder: (_, int position) {
                           final challenge = snapshot.data[position];
@@ -93,29 +94,6 @@ class _ChallengePageState extends State<ChallengePage> {
       ),
     );
   }
-
-  void _showDialog() {
-    // flutter defined function
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          title: new Text("Alert Dialog title"),
-          content: new Text("Alert Dialog body"),
-          actions: <Widget>[
-            // usually buttons at the bottom of the dialog
-            new FlatButton(
-              child: new Text("Close"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 }
 
 Card makeCard(Challenge challenge, BuildContext context) => Card(
@@ -141,12 +119,12 @@ ListTile makeListTile(Challenge challenge, BuildContext context) => ListTile(
                 child: LinearProgressIndicator(
                     backgroundColor: Color(0xF41FF00),
                     value: calculateProgress(challenge),
-                    valueColor: AlwaysStoppedAnimation(Color(0xFF41FF00))),
+                    valueColor: AlwaysStoppedAnimation(Colors.greenAccent)),
               ))
         ],
       ),
       trailing: Icon(Icons.keyboard_arrow_right,
-          color: Color(0xFF41FF00), size: 30.0),
+          color: Colors.greenAccent, size: 30.0),
       onTap: () {
         Navigator.push(
           context,
@@ -154,7 +132,6 @@ ListTile makeListTile(Challenge challenge, BuildContext context) => ListTile(
         );
       },
     );
-
 
 double calculateProgress(Challenge challenge) {
   double hoursIn = double.parse(challenge.completedHours);

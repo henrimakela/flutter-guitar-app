@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'overview.dart';
 import 'package:monthly_music_challenge/challenge-page.dart';
 import 'package:monthly_music_challenge/training-page.dart';
 import 'package:monthly_music_challenge/statistics-page.dart';
@@ -15,7 +16,7 @@ class GuitarApp extends StatefulWidget {
 
 class GuitarAppState extends State<GuitarApp> {
   int _selectedPage = 0;
-  final _pageOptions = [ChallengePage(), StatisticsPage(1)];
+  final _pageOptions = [ChallengePage(), OverView()];
   
   @override
   Widget build(BuildContext context) {
@@ -23,16 +24,21 @@ class GuitarAppState extends State<GuitarApp> {
       bodyColor: Color(0xFF41FF00),
       displayColor: Color(0xFF41FF00)
     );
+    final alternativeTextTheme = Theme.of(context).textTheme.apply(
+      bodyColor: Colors.greenAccent[400],
+      displayColor: Colors.greenAccent[400]
+    );
     return MaterialApp(
       title: "Guitar App",
       theme: ThemeData(
+        dialogBackgroundColor: Color(0xFF2D333F),
         primaryColor: Color(0xFF2D333F),
-        textTheme: terminalTextTheme),
+        textTheme: alternativeTextTheme),
       home: Scaffold(
         backgroundColor: Color(0xFF2D333F),
         appBar: AppBar(
           title: Text("Guitar App"),
-          textTheme: terminalTextTheme,
+          textTheme: alternativeTextTheme,
         ),
         body: _pageOptions[_selectedPage],
         bottomNavigationBar: BottomNavigationBar(

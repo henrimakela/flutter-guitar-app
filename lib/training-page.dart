@@ -55,58 +55,66 @@ class _TrainingPageState extends State<TrainingPage> {
         body: trainingWidget());
   }
 
-  Widget trainingWidget(){
+  Widget trainingWidget() {
     if (!dataIsLoaded) {
       return Center(child: CircularProgressIndicator());
     } else {
       return Container(
           padding: EdgeInsets.fromLTRB(5, 50, 5, 20),
           child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Text(
-                  "Training on ${challenge.name}",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 25.0),
-                ),
-                Text(
-                  elapsedTime ?? "",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 25.0),
-                ),
-                ButtonBar(
-                  alignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    FloatingActionButton(
-                        heroTag: null,
-                        backgroundColor: Colors.green,
-                        onPressed: () {
-                          startStopWatch();
-                        },
-                        child: Icon(Icons.play_arrow)),
-                    FloatingActionButton(
-                        heroTag: null,
-                        backgroundColor: Colors.red,
-                        onPressed: () {
-                          stopStopWatch();
-                        },
-                        child: Icon(Icons.stop)),
-                  ],
-                ),
-                MaterialButton(
-                  onPressed: () {
-                    stopStopWatch();
-                    saveProgress();
-                  },
-                  color: Colors.black38,
-                  textColor: Colors.white,
-                  child: Text("End session"),
-                )
-              ],
-            ),
-          ));
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                "Training on ${challenge.name}",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 25.0),
+              ),
+              SizedBox(height: 100),
+              Text(
+                elapsedTime ?? "",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 25.0),
+              ),
+              SizedBox(height: 100),
+              ButtonBar(
+                alignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  OutlineButton(
+                      onPressed: () {
+                        startStopWatch();
+                      },
+                      child: Text("Start training",
+                          style: TextStyle(color: Colors.white)),
+                      borderSide: BorderSide(color: Colors.greenAccent),
+                      shape: new RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(30.0))),
+                  OutlineButton(
+                      onPressed: () {
+                        stopStopWatch();
+                      },
+                      child: Text("Stop training",
+                          style: TextStyle(color: Colors.white)),
+                      borderSide: BorderSide(color: Colors.greenAccent),
+                      shape: new RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(30.0)))
+                ],
+              ),
+              OutlineButton(
+                onPressed: () {
+                  stopStopWatch();
+                  saveProgress();
+                  resetTime();
+                },
+                child: Text("Save progress",
+                    style: TextStyle(color: Colors.white)),
+                borderSide: BorderSide(color: Colors.greenAccent),
+                shape: new RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(30.0)),
+              )
+            ],
+          )));
     }
   }
 
@@ -117,6 +125,11 @@ class _TrainingPageState extends State<TrainingPage> {
 
   stopStopWatch() {
     stopWatch.stop();
+    setTime();
+  }
+
+  resetTime(){
+    stopWatch.reset();
     setTime();
   }
 

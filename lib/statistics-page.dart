@@ -87,36 +87,22 @@ class _StatisticsPageState extends State<StatisticsPage> {
           title: Text("Progress"),
         ),
         body: Container(
+          margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
             child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              new Text(
-                "Your progression in the current challenge",
-                style: TextStyle(fontSize: 20),
-                textAlign: TextAlign.center,
-              ),
-              progressChart()
-            ],
+            children: <Widget>[progressChart()],
           ),
         )));
   }
 
   Widget progressChart() {
     if (dataIsLoaded) {
-      return Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      if (this.completedPercentage >= 100) {
+        return Column(
           children: <Widget>[
-            Text(
-              this.challengeName,
-              style: TextStyle(fontSize: 25),
-              textAlign: TextAlign.center,
-            ),
-            Text(
-              this.challengeDesc,
-              style: TextStyle(fontSize: 20),
-              textAlign: TextAlign.center,
-            ),
+            Text("You have completed this exercise",
+                style: TextStyle(fontSize: 20), textAlign: TextAlign.center),
             AnimatedCircularChart(
               key: _chartKey,
               size: _chartSize,
@@ -126,27 +112,90 @@ class _StatisticsPageState extends State<StatisticsPage> {
               edgeStyle: SegmentEdgeStyle.round,
               holeLabel: "$completed %",
               percentageValues: true,
-            ),
-            Text(
-              "You have trained this challenge for $hours hours $minutes minutes",
-              style: TextStyle(fontSize: 18),
-              textAlign: TextAlign.center,
-            ),
-            Text("You have $hoursToGo hours $minutesOverHour remaining"),
-          MaterialButton(
-            onPressed: (){
-              Navigator.push(
+            )
+          ],
+        );
+      } else {
+        return Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Text(
+                this.challengeName,
+                style: TextStyle(fontSize: 25),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 20,),
+              Text(
+                this.challengeDesc,
+                style: TextStyle(fontSize: 20),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 20,),
+              AnimatedCircularChart(
+                key: _chartKey,
+                size: _chartSize,
+                initialChartData: createData(
+                    this.completedPercentage, this.remainingPercentage),
+                chartType: CircularChartType.Radial,
+                edgeStyle: SegmentEdgeStyle.round,
+                holeLabel: "$completed %",
+                percentageValues: true,
+              ),
+              createProgressRow(),
+              SizedBox(
+                height: 50,
+              ),
+              OutlineButton(
+                  onPressed: () {
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => TrainingPage(widget.challengeID)),
+                          builder: (context) =>
+                              TrainingPage(widget.challengeID)),
                     );
-            },
-            child: Text("Continue training"),
-          )
-          ]);
+                  },
+                  child: Text("Continue training",
+                      style: TextStyle(color: Colors.white)),
+                  borderSide: BorderSide(color: Colors.greenAccent),
+                  shape: new RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(30.0)))
+            ]);
+      }
     } else {
       return Center();
     }
+  }
+
+  Row createProgressRow() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Column(
+          children: <Widget>[
+            Text("Done",
+                style: TextStyle(fontSize: 18), textAlign: TextAlign.center),
+            SizedBox(
+              height: 20,
+            ),
+            Text("$hours hours $minutes minutes")
+          ],
+        ),
+        SizedBox(
+          width: 75,
+        ),
+        Column(
+          children: <Widget>[
+            Text("Remaining",
+                style: TextStyle(fontSize: 18), textAlign: TextAlign.center),
+            SizedBox(
+              height: 20,
+            ),
+            Text("$hoursToGo hours $minutesOverHour minutes")
+          ],
+        )
+      ],
+    );
   }
 
   List<CircularStackEntry> createData(double completed, double remaining) {
@@ -154,8 +203,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
     //hours practiced in percentage
     print(completedPercentage);
     print(remainingPercentage);
-    Color dialColor = Color(0xFF41FF00);
-    Color remainingColor = Color(0xF41FF00);
+    Color dialColor = Colors.greenAccent;
+    Color remainingColor = Color(0x3F69F0AE);
     labelColor = dialColor;
     List<CircularStackEntry> data = <CircularStackEntry>[
       new CircularStackEntry([
