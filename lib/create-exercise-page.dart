@@ -20,7 +20,6 @@ class CreateExercisePageState extends State<CreateExercisePage> {
 
   @override
   Widget build(BuildContext context) {
-    Color oldSchoolGreen = Color(0xFF41FF00);
     Widget child;
     if (!saved) {
       child = new Container(
@@ -42,16 +41,16 @@ class CreateExercisePageState extends State<CreateExercisePage> {
                     },
                     decoration: InputDecoration(
                         labelText: "Name of the exercise",
-                        labelStyle: TextStyle(color: oldSchoolGreen),
+                        labelStyle: TextStyle(color: Colors.greenAccent),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide:
                               BorderSide(color: Colors.white24, width: 1.0),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide:  BorderSide(color: oldSchoolGreen, width: 1.0)
-                        )),
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                                color: Colors.greenAccent, width: 1.0))),
                     onSaved: (String value) {
                       challenge.name = value;
                     },
@@ -64,16 +63,16 @@ class CreateExercisePageState extends State<CreateExercisePage> {
                     },
                     decoration: InputDecoration(
                         labelText: "Description",
-                        labelStyle: TextStyle(color: oldSchoolGreen),
+                        labelStyle: TextStyle(color: Colors.greenAccent),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide:
                               BorderSide(color: Colors.white24, width: 1.0),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide:  BorderSide(color: oldSchoolGreen, width: 1.0)
-                        )),
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                                color: Colors.greenAccent, width: 1.0))),
                     onSaved: (String value) {
                       challenge.description = value;
                     },
@@ -86,33 +85,37 @@ class CreateExercisePageState extends State<CreateExercisePage> {
                     },
                     decoration: InputDecoration(
                         labelText: "Hours",
-                        labelStyle: TextStyle(color: Color(0xFF41FF00)),
+                        labelStyle: TextStyle(color: Colors.greenAccent),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide:
                               BorderSide(color: Colors.white24, width: 1.0),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide:  BorderSide(color: oldSchoolGreen, width: 1.0)
-                        )),
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                                color: Colors.greenAccent, width: 1.0))),
                     onSaved: (String value) {
                       challenge.goalHours = value;
                     },
                     keyboardType: TextInputType.number,
                   ),
-                  MaterialButton(
-                    onPressed: () => {
-                          if (_formKey.currentState.validate()) {submit()}
-                        },
-                    child: Text("Save"),
-                  )
+                  OutlineButton(
+                      onPressed: () => {
+                            if (_formKey.currentState.validate()) {submit()}
+                          },
+                      child:
+                          Text("Save", style: TextStyle(color: Colors.greenAccent)),
+                      borderSide: BorderSide(color: Colors.greenAccent),
+                      shape: new RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(30.0)))
                 ],
               )));
     } else {
       child = new Container(
         child: Center(
-          child: Text("New exercise saved!", style: TextStyle(color: oldSchoolGreen, fontSize: 20)),
+          child: Text("New exercise saved!",
+              style: TextStyle(color: Colors.greenAccent, fontSize: 20)),
         ),
       );
     }

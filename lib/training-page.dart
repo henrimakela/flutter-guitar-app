@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'models/session.dart';
 import 'package:monthly_music_challenge/database/DBHelper.dart';
 import 'package:monthly_music_challenge/models/challenge.dart';
 import 'dart:async';
@@ -173,7 +174,9 @@ class _TrainingPageState extends State<TrainingPage> {
     int milliSeconds = stopWatch.elapsedMilliseconds;
     double hours = toHours(60000);
     print("Training time $milliSeconds");
-
+    var date = DateTime.now();
+    
+    dbHelper.saveSession(new Session(hours, date.toString()));
     dbHelper.saveProgress(hours, widget.challengeID);
   }
 }
