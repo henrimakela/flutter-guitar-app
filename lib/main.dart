@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'overview.dart';
 import 'package:monthly_music_challenge/challenge-page.dart';
-import 'package:monthly_music_challenge/training-page.dart';
-import 'package:monthly_music_challenge/statistics-page.dart';
 
 //export PATH="$PATH:`pwd`/flutter/bin" add flutter to path from terminal
 void main() => runApp(GuitarApp());
@@ -20,13 +18,10 @@ class GuitarAppState extends State<GuitarApp> {
   
   @override
   Widget build(BuildContext context) {
-    final terminalTextTheme = Theme.of(context).textTheme.apply(
-      bodyColor: Color(0xFF41FF00),
-      displayColor: Color(0xFF41FF00)
-    );
+  
     final alternativeTextTheme = Theme.of(context).textTheme.apply(
-      bodyColor: Colors.greenAccent[400],
-      displayColor: Colors.greenAccent[400]
+      bodyColor: Colors.greenAccent,
+      displayColor: Colors.greenAccent
     );
     return MaterialApp(
       title: "Guitar App",
@@ -52,9 +47,9 @@ class GuitarAppState extends State<GuitarApp> {
           },
           items: [
             BottomNavigationBarItem(
-                icon: Icon(Icons.home), title: Text("My Excercises")),
+                icon: Icon(Icons.list), title: Text("My Excercises")),
             BottomNavigationBarItem(
-                icon: Icon(Icons.event_note), title: Text("Overview"))
+                icon: Icon(Icons.feedback), title: Text("Overview"))
           ],
         ),
       ),

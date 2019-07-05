@@ -39,54 +39,57 @@ class _ChallengePageState extends State<ChallengePage> {
               future: dbHelper.getAllChallenges(),
               initialData: List(),
               builder: (context, snapshot) {
-                return snapshot.hasData
-                    ? Container(
-                        child: ListView.builder(
-                        itemCount: snapshot.data.length,
-                        itemBuilder: (_, int position) {
-                          final challenge = snapshot.data[position];
-                          return Dismissible(
-                            key: Key(snapshot.data[position].id.toString()),
-                            background: Container(
-                              alignment: AlignmentDirectional.centerEnd,
-                              color: Colors.redAccent,
-                              child: Icon(Icons.delete, color: Colors.white),
-                            ),
-                            confirmDismiss: (DismissDirection direction) async {
-                              final bool res = await showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: const Text("Confirm"),
-                                      content: const Text(
-                                          "Are you sure you wish to delete this item?"),
-                                      actions: <Widget>[
-                                        FlatButton(
-                                            onPressed: () {
-                                              dbHelper.deleteChallengeById(
-                                                  challenge.id);
-                                              setState(() {
-                                                itemRemoved = true;
-                                              });
-                                              Navigator.of(context).pop(true);
-                                            },
-                                            child: const Text("DELETE")),
-                                        FlatButton(
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(false),
-                                          child: const Text("CANCEL"),
-                                        )
-                                      ],
-                                    );
-                                  });
-                            },
-                            child: makeCard(challenge, context),
-                          );
+                if (snapshot.hasData) {
+                  return Container(
+                      child: ListView.builder(
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (_, int position) {
+                      final challenge = snapshot.data[position];
+                      return Dismissible(
+                        key: Key(snapshot.data[position].id.toString()),
+                        background: Container(
+                          padding: EdgeInsets.only(right: 10),
+                          alignment: AlignmentDirectional.centerEnd,
+                          color: Colors.redAccent,
+                          child: Icon(Icons.delete, color: Colors.white),
+                        ),
+                        confirmDismiss: (DismissDirection direction) async {
+                          final bool res = await showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text("Confirm"),
+                                  content: const Text(
+                                      "Are you sure you wish to delete this item?"),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                        onPressed: () {
+                                          dbHelper.deleteChallengeById(
+                                              challenge.id);
+                                          setState(() {
+                                            itemRemoved = true;
+                                          });
+                                          Navigator.of(context).pop(true);
+                                        },
+                                        child: const Text("DELETE")),
+                                    FlatButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
+                                      child: const Text("CANCEL"),
+                                    )
+                                  ],
+                                );
+                              });
                         },
-                      ))
-                    : Center(
-                        child: CircularProgressIndicator(),
+                        child: makeCard(challenge, context),
                       );
+                    },
+                  ));
+                } else {
+                  return Center(
+                    child: CircularProgressIndicator()
+                  );
+                }
               },
             ))
           ],
@@ -134,10 +137,10 @@ ListTile makeListTile(Challenge challenge, BuildContext context) => ListTile(
     );
 
 double calculateProgress(Challenge challenge) {
-  double hoursIn = double.parse(challenge.completedHours);
-  double goal = double.parse(challenge.goalHours);
-  double completedPercentage = hoursIn / goal;
-
+  int minutesIn = challenge.completedMinutes;
+  int goal = challenge.goalMinutes;
+  double completedPercentage = minutesIn / goal;
+  //this  might not be accurate
   print("percentage  " + completedPercentage.toString());
   return completedPercentage;
 }

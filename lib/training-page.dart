@@ -154,12 +154,12 @@ class _TrainingPageState extends State<TrainingPage> {
     return "$minutesStr : $secondsStr";
   }
 
-  toHours(int milliSeconds) {
+  toMinutes(int milliSeconds){
     int hundreds = (milliSeconds / 10).truncate();
     int seconds = (hundreds / 100).truncate();
-    int minutes = (seconds / 60).truncate();
-    double hours = (minutes / 60);
-    return hours;
+    int minutes = (seconds / 60).round();
+
+    return minutes;
   }
 
   updateTime(Timer timer) {
@@ -172,11 +172,11 @@ class _TrainingPageState extends State<TrainingPage> {
 
   saveProgress() {
     int milliSeconds = stopWatch.elapsedMilliseconds;
-    double hours = toHours(60000);
-    print("Training time $milliSeconds");
+    int minutes = toMinutes(milliSeconds);
+    print("Training time $minutes");
     var date = DateTime.now();
     
-    dbHelper.saveSession(new Session(hours, date.toString()));
-    dbHelper.saveProgress(hours, widget.challengeID);
+    dbHelper.saveSession(new Session(minutes, date.toString()));
+    dbHelper.saveProgress(minutes, widget.challengeID);
   }
 }

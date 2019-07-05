@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 class Session{
-  double duration;
+  int duration;
   String date;
 
   Session(this.duration, this.date);

@@ -20,55 +20,31 @@ class _StatisticsPageState extends State<StatisticsPage> {
   Color labelColor = Colors.white;
   bool dataIsLoaded = false;
   double completedPercentage;
-  int completed;
-
-  //completed hours and minutes that will be shown on the screen
-  int hours;
-  int minutes;
-
-  //remaining hours and minutes that will be shown on the screen
-  int hoursToGo;
-  int minutesOverHour;
+  String completed;
 
   double remainingPercentage;
-  double completedHours;
-  double remainingHours;
+  int completedMinutes;
+  int remainingMinutes;
 
   String challengeName;
   String challengeDesc;
   String challengeCategory;
 
   @override
-  void initState() {
+  Widget build(BuildContext context) {
     fetchChallengeFromDatabase(widget.challengeID).then((value) {
       setState(() {
-        double hoursIn = double.parse(value.completedHours);
-        double goal = double.parse(value.goalHours);
+        int minutesIn = value.completedMinutes;
+        int goal = value.goalMinutes;
         int id = value.id;
 
-        this.completedHours = hoursIn;
-        this.remainingHours = goal - hoursIn;
+        this.completedMinutes = minutesIn;
+        this.remainingMinutes = goal - minutesIn;
 
-        this.completedPercentage = (hoursIn / goal) * 100;
+        this.completedPercentage = (minutesIn / goal) * 100;
         this.remainingPercentage = 100 - completedPercentage;
         //completed percentage as an integer
-        completed = this.completedPercentage.truncate();
-
-        // extract decimals from completed hour
-        double number = completedHours;
-        int hours = number.truncate();
-        double fractional = number - hours;
-        this.hours = hours;
-        double min = (60 / 100) * (fractional * 100);
-        this.minutes = min.truncate();
-
-        double remainingTime = this.remainingHours;
-        int remainingHours = remainingTime.truncate();
-        double fractionalRemaining = remainingTime - remainingHours;
-
-        this.hoursToGo = remainingHours;
-        double remainingMin = (60 / 100) * (fractionalRemaining * 100);
-        this.minutesOverHour = remainingMin.truncate();
+        completed = this.completedPercentage.toStringAsFixed(1);
 
         challengeName = value.name;
         challengeDesc = value.description;
@@ -76,24 +52,19 @@ class _StatisticsPageState extends State<StatisticsPage> {
       });
     });
 
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Color(0xFF2D333F),
         appBar: AppBar(
           title: Text("Progress"),
         ),
         body: Container(
-          margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
+            margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
             child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[progressChart()],
-          ),
-        )));
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[progressChart()],
+              ),
+            )));
   }
 
   Widget progressChart() {
@@ -124,13 +95,17 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 style: TextStyle(fontSize: 25),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               Text(
                 this.challengeDesc,
                 style: TextStyle(fontSize: 20),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               AnimatedCircularChart(
                 key: _chartKey,
                 size: _chartSize,
@@ -150,6 +125,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
+                          maintainState: false,
                           builder: (context) =>
                               TrainingPage(widget.challengeID)),
                     );
@@ -178,7 +154,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
             SizedBox(
               height: 20,
             ),
-            Text("$hours hours $minutes minutes")
+            Text("$completedMinutes minutes")
           ],
         ),
         SizedBox(
@@ -191,7 +167,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
             SizedBox(
               height: 20,
             ),
-            Text("$hoursToGo hours $minutesOverHour minutes")
+            Text("$remainingMinutes minutes")
           ],
         )
       ],
@@ -199,10 +175,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
   List<CircularStackEntry> createData(double completed, double remaining) {
-    print("CreateData is called");
-    //hours practiced in percentage
-    print(completedPercentage);
-    print(remainingPercentage);
     Color dialColor = Colors.greenAccent;
     Color remainingColor = Color(0x3F69F0AE);
     labelColor = dialColor;
@@ -220,6 +192,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
         ),
       ]),
     ];
+
+    //this means are coming back from training page so chart should be animated again
+    if (_chartKey.currentState != null) {
+      _chartKey.currentState.updateData(data);
+    }
 
     return data;
   }

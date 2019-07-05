@@ -26,10 +26,10 @@ class DBHelper {
   void _onCreate(Database db, int version) async {
     // When creating the db, create the table
     await db.execute(
-        "CREATE TABLE Challenge(id INTEGER PRIMARY KEY, name TEXT, description TEXT,completedHours TEXT, goalHours TEXT)");
+        "CREATE TABLE Challenge(id INTEGER PRIMARY KEY, name TEXT, description TEXT,completedMinutes INTEGER, goalMinutes INTEGER)");
 
     await db.execute(
-        "CREATE TABLE Session(id INTEGER PRIMARY KEY, duration REAL, date TEXT)");
+        "CREATE TABLE Session(id INTEGER PRIMARY KEY, duration INTEGER, date TEXT)");
   }
 
   Future<Challenge> getCurrentChallenge() async {
@@ -41,8 +41,8 @@ class DBHelper {
           list[i]["id"],
           list[i]["name"],
           list[i]["description"],
-          list[i]["completedHours"],
-          list[i]["goalHours"]));
+          list[i]["completedMinutes"],
+          list[i]["goalMinutes"]));
     }
     return challenges[0];
   }
@@ -56,20 +56,20 @@ class DBHelper {
           list[i]["id"],
           list[i]["name"],
           list[i]["description"],
-          list[i]["completedHours"],
-          list[i]["goalHours"]));
+          list[i]["completedMinutes"],
+          list[i]["goalMinutes"]));
     }
     return challenges;
   }
 
-  void saveProgress(double trainingHours, int id) async {
+  void saveProgress(int trainingMinutes, int id) async {
     var dbClient = await db;
-    getCurrentChallenge().then((value) {
-      double lastTime = double.parse(value.completedHours);
-      String newTime = (lastTime + trainingHours).toString();
+    getChallengeById(id).then((value) {
+      int lastTime = value.completedMinutes;
+      int newTime = lastTime + trainingMinutes;
 
       dbClient.rawUpdate(
-          "UPDATE Challenge SET completedHours = '$newTime' WHERE id  = '$id'");
+          "UPDATE Challenge SET completedMinutes = '$newTime' WHERE id  = '$id'");
     });
   }
 
@@ -86,44 +86,18 @@ class DBHelper {
     var dbClient = await db;
     await dbClient.transaction((txn) async {
       return await txn.rawInsert(
-          'INSERT INTO Challenge(name, description, completedHours, goalHours) VALUES(' +
-              '\'' +
-              challenge.name +
-              '\'' +
-              ',' +
-              '\'' +
-              challenge.description +
-              '\'' +
-              ',' +
-              '\'' +
-              challenge.completedHours +
-              '\'' +
-              ',' +
-              '\'' +
-              challenge.goalHours +
-              '\'' +
-              ')');
+          "INSERT INTO Challenge(name, description, completedMinutes, goalMinutes) VALUES('${challenge.name}', '${challenge.description}', ${challenge.completedMinutes}, ${challenge.goalMinutes})");
     });
   }
 
-  void updateCurrentChallengeToNew(Challenge challenge) async {
+  Future<int> getTotalTime() async {
     var dbClient = await db;
-    String name = challenge.name;
-    String description = challenge.description;
-    String goal = challenge.goalHours;
-
-    dbClient.rawUpdate(
-        "UPDATE Challenge SET name = '$name', description = '$description', completedHours = '0', goalHours = '$goal' WHERE id = 1");
-  }
-
-  Future<double> getTotalHours() async {
-    var dbClient = await db;
-    double totalHours = 0;
+    int totalMinutes = 0;
     List<Map> list = await dbClient.rawQuery('SELECT * FROM Challenge');
     for (int i = 0; i < list.length; i++) {
-      totalHours += double.parse(list[i]["completedHours"]);
+      totalMinutes += list[i]["completedMinutes"];
     }
-    return totalHours;
+    return totalMinutes;
   }
 
   Future<List<Session>> getAllSessions() async {
@@ -143,7 +117,7 @@ class DBHelper {
     List<Map> list =
         await dbClient.rawQuery("SELECT * FROM Challenge WHERE id  = '$id'");
     return new Challenge(list[0]["id"], list[0]["name"], list[0]["description"],
-        list[0]["completedHours"], list[0]["goalHours"]);
+        list[0]["completedMinutes"], list[0]["goalMinutes"]);
   }
 
   void deleteChallengeById(int id) async {

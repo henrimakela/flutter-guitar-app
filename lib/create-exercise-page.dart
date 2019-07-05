@@ -84,7 +84,7 @@ class CreateExercisePageState extends State<CreateExercisePage> {
                       }
                     },
                     decoration: InputDecoration(
-                        labelText: "Hours",
+                        labelText: "Minutes",
                         labelStyle: TextStyle(color: Colors.greenAccent),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -96,7 +96,7 @@ class CreateExercisePageState extends State<CreateExercisePage> {
                             borderSide: BorderSide(
                                 color: Colors.greenAccent, width: 1.0))),
                     onSaved: (String value) {
-                      challenge.goalHours = value;
+                      challenge.goalMinutes = int.parse(value);
                     },
                     keyboardType: TextInputType.number,
                   ),
@@ -130,7 +130,7 @@ class CreateExercisePageState extends State<CreateExercisePage> {
   void submit() {
     if (this._formKey.currentState.validate()) {
       this._formKey.currentState.save();
-      challenge.completedHours = "0";
+      challenge.completedMinutes = 0;
       dbHelper.saveChallenge(challenge);
       setState(() {
         saved = true;

@@ -1,7 +1,7 @@
 class Stats {
-  double totalHours;
+  int totalTrainingTime;
   double averageSessionTime;
   int sessionCount;
 
-  Stats(this.totalHours, this.sessionCount, this.averageSessionTime);
+  Stats(this.totalTrainingTime, this.sessionCount, this.averageSessionTime);
 }

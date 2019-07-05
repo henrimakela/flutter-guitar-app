@@ -6,7 +6,6 @@ import 'database/DBHelper.dart';
 class OverView extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _OverViewState();
   }
 }
@@ -49,24 +48,21 @@ class _OverViewState extends State<OverView> {
     return Container(
       margin: EdgeInsets.all(25),
       child: Center(
-      
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              "You've trained ${overviewStats.totalHours} hours of guitar with this app",
+              "You've trained ${overviewStats.totalTrainingTime} minutes of guitar with this app",
               style: TextStyle(color: Colors.greenAccent, fontSize: 20),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 50),
-            Text(
-              "You've had ${overviewStats.sessionCount} training sessions",
-              style: TextStyle(color: Colors.greenAccent, fontSize: 20),
-              textAlign: TextAlign.center
-            ),
+            Text("You've had ${overviewStats.sessionCount} training sessions",
+                style: TextStyle(color: Colors.greenAccent, fontSize: 20),
+                textAlign: TextAlign.center),
             SizedBox(height: 50),
             Text(
-              "By average, your training session lasts for ${overviewStats.averageSessionTime} hours",
+              "Your average training session is ${overviewStats.averageSessionTime} minutes",
               style: TextStyle(color: Colors.greenAccent, fontSize: 20),
               textAlign: TextAlign.center,
             )
@@ -76,31 +72,30 @@ class _OverViewState extends State<OverView> {
     );
   }
 
-  Future<double> getTotalCompletedHours() async {
-    DBHelper dbHelper = new DBHelper();
-    return dbHelper.getTotalHours();
-  }
+
 
   Future<Stats> buildOverViewStats() async {
     DBHelper dbHelper = new DBHelper();
 
-    double totalHours = await dbHelper.getTotalHours();
     List<Session> sessions = await dbHelper.getAllSessions();
     int sessionCount = sessions.length;
-    double averageTrainingTime = _getAverageSessionTime(sessions);
+    int totalTrainingTimeString = await dbHelper.getTotalTime();
+        
+    double avgTimeString = _getAverageSessionTime(sessions);
 
-    return new Stats(totalHours, sessionCount, averageTrainingTime);
+    return new Stats(totalTrainingTimeString, sessionCount, avgTimeString);
   }
 
-  double _getAverageSessionTime(List<Session> sessions){
-
-    double totalTime = 0;
+  double _getAverageSessionTime(List<Session> sessions) {
+    int totalMinutes = 0;
     double averageTime = 0;
-      for(int i = 0; i < sessions.length; i++){
-          totalTime += sessions[i].duration;
-      }
+    for (int i = 0; i < sessions.length; i++) {
+      totalMinutes += sessions[i].duration;
+    }
+    if(totalMinutes == 0) return 0;
     
-    averageTime = totalTime / sessions.length;
+    averageTime = totalMinutes / sessions.length;
     return averageTime;
   }
+
 }
