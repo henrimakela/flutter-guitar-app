@@ -30,43 +30,25 @@ class _OverViewState extends State<OverView> {
     if (dataIsLoaded) {
       return showOverViewStats();
     } else {
-      return Center(
-          child: Column(
-        children: <Widget>[
-          CircularProgressIndicator(),
-          Text(
-            "Generating your stats...",
-            style: TextStyle(color: Colors.greenAccent, fontSize: 20),
-            textAlign: TextAlign.center,
-          )
-        ],
-      ));
+      return Container();
     }
   }
 
   Widget showOverViewStats() {
-    return Container(
-      margin: EdgeInsets.all(25),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              "You've trained ${overviewStats.totalTrainingTime} minutes of guitar with this app",
-              style: TextStyle(color: Colors.greenAccent, fontSize: 20),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 50),
-            Text("You've had ${overviewStats.sessionCount} training sessions",
-                style: TextStyle(color: Colors.greenAccent, fontSize: 20),
-                textAlign: TextAlign.center),
-            SizedBox(height: 50),
-            Text(
-              "Your average training session is ${overviewStats.averageSessionTime} minutes",
-              style: TextStyle(color: Colors.greenAccent, fontSize: 20),
-              textAlign: TextAlign.center,
-            )
-          ],
+    return SingleChildScrollView(
+      child: Container(
+        margin: EdgeInsets.all(25),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              OverViewCard(heading: "You've trained", content: overviewStats.totalTrainingTime.toString(), trailing: "minutes of guitar with this app."),
+              SizedBox(height: 20),
+              OverViewCard(heading: "You've had", content: overviewStats.sessionCount.toString(), trailing: "training sessions."),
+              SizedBox(height: 20),
+              OverViewCard(heading: "Your average training session is", content: overviewStats.averageSessionTime.toString(),trailing: "minutes.",)
+            ],
+          ),
         ),
       ),
     );
@@ -98,4 +80,42 @@ class _OverViewState extends State<OverView> {
     return averageTime;
   }
 
+}
+
+class OverViewCard extends StatelessWidget {
+
+  final String heading;
+  final String content;
+  final String trailing;
+
+  OverViewCard({
+    @required this.heading,
+    @required this.content,
+    @required this.trailing
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return  Card(
+      elevation: 8.0,
+      shape:RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0)
+      ),
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.8,
+          margin: EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(heading),
+              SizedBox(height: 10,),
+              Text(content, style: Theme.of(context).textTheme.display1,),
+              SizedBox(height: 10,),
+              Text(trailing)
+            ],
+          ),
+        ),
+      );
+
+  }
 }

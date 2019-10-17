@@ -91,14 +91,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               Text(
-                this.challengeName,
-                style: TextStyle(fontSize: 25),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Text(
                 this.challengeDesc,
                 style: TextStyle(fontSize: 20),
                 textAlign: TextAlign.center,

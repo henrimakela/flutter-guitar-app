@@ -15,7 +15,7 @@ class GuitarApp extends StatefulWidget {
 class GuitarAppState extends State<GuitarApp> {
   int _selectedPage = 0;
   final _pageOptions = [ChallengePage(), OverView()];
-  
+  Color backgroundColor = Color(0xFF2D333F);
   @override
   Widget build(BuildContext context) {
   
@@ -26,14 +26,14 @@ class GuitarAppState extends State<GuitarApp> {
     return MaterialApp(
       title: "Guitar App",
       theme: ThemeData(
-        dialogBackgroundColor: Color(0xFF2D333F),
-        primaryColor: Color(0xFF2D333F),
+        cardColor: backgroundColor,
+        scaffoldBackgroundColor: backgroundColor,
+        dialogBackgroundColor: backgroundColor,
+        primaryColor: backgroundColor,
         textTheme: alternativeTextTheme),
       home: Scaffold(
-        backgroundColor: Color(0xFF2D333F),
         appBar: AppBar(
-          title: Text("Guitar App"),
-          textTheme: alternativeTextTheme,
+
         ),
         body: _pageOptions[_selectedPage],
         bottomNavigationBar: BottomNavigationBar(

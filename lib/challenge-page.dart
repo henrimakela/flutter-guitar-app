@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 //import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:monthly_music_challenge/models/challenge.dart';
 import "create-exercise-page.dart";
@@ -19,87 +20,102 @@ class _ChallengePageState extends State<ChallengePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: Column(
-          children: <Widget>[
-            MaterialButton(
-              padding: EdgeInsets.all(40),
-              onPressed: () => {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => CreateExercisePage()),
-                )
-              },
-              child: Text("Create new exercise",
-                  style: TextStyle(color: Colors.white, fontSize: 20)),
-            ),
-            Expanded(
-                child: FutureBuilder(
-              future: dbHelper.getAllChallenges(),
-              initialData: List(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return Container(
-                      child: ListView.builder(
-                    itemCount: snapshot.data.length,
-                    itemBuilder: (_, int position) {
-                      final challenge = snapshot.data[position];
-                      return Dismissible(
-                        key: Key(snapshot.data[position].id.toString()),
-                        background: Container(
-                          padding: EdgeInsets.only(right: 10),
-                          alignment: AlignmentDirectional.centerEnd,
-                          color: Colors.redAccent,
-                          child: Icon(Icons.delete, color: Colors.white),
-                        ),
-                        confirmDismiss: (DismissDirection direction) async {
-                          final bool res = await showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text("Confirm"),
-                                  content: const Text(
-                                      "Are you sure you wish to delete this item?"),
-                                  actions: <Widget>[
-                                    FlatButton(
-                                        onPressed: () {
-                                          dbHelper.deleteChallengeById(
-                                              challenge.id);
-                                          setState(() {
-                                            itemRemoved = true;
-                                          });
-                                          Navigator.of(context).pop(true);
-                                        },
-                                        child: const Text("DELETE")),
-                                    FlatButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(false),
-                                      child: const Text("CANCEL"),
-                                    )
-                                  ],
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CreateExercisePage()),
+          );
+        },
+        child: Icon(Icons.add),
+        backgroundColor: Colors.greenAccent,
+      ),
+      body: Container(
+        child: Center(
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                  child: FutureBuilder(
+                    future: dbHelper.getAllChallenges(),
+                    initialData: List(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        if (snapshot.data.length == 0) {
+                          return placeHolderListTile();
+                        }
+                        else {return Container(
+                            child: ListView.builder(
+                              itemCount: snapshot.data.length,
+                              itemBuilder: (_, int position) {
+
+                                final challenge = snapshot.data[position];
+                                return Dismissible(
+                                  key: Key(
+                                      snapshot.data[position].id.toString()),
+                                  background: Container(
+                                    padding: EdgeInsets.only(right: 10),
+                                    alignment: AlignmentDirectional.centerEnd,
+                                    color: Colors.redAccent,
+                                    child: Icon(
+                                        Icons.delete, color: Colors.white),
+                                  ),
+                                  confirmDismiss: (
+                                      DismissDirection direction) async {
+                                    final bool res = await showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text("Confirm"),
+                                            content: const Text(
+                                                "Are you sure you wish to delete this item?"),
+                                            actions: <Widget>[
+                                              FlatButton(
+                                                  onPressed: () {
+                                                    dbHelper
+                                                        .deleteChallengeById(
+                                                        challenge.id);
+                                                    setState(() {
+                                                      itemRemoved = true;
+                                                    });
+                                                    Navigator.of(context).pop(
+                                                        true);
+                                                  },
+                                                  child: const Text("DELETE")),
+                                              FlatButton(
+                                                onPressed: () =>
+                                                    Navigator.of(context).pop(
+                                                        false),
+                                                child: const Text("CANCEL"),
+                                              )
+                                            ],
+                                          );
+                                        });
+
+                                    return res;
+                                  },
+                                  child: makeCard(challenge, context),
                                 );
-                              });
-                        },
-                        child: makeCard(challenge, context),
-                      );
+                              },
+                            ));}
+                      }
+                      else {
+                        return Center(
+                            child: CircularProgressIndicator()
+                        );
+                      }
                     },
-                  ));
-                } else {
-                  return Center(
-                    child: CircularProgressIndicator()
-                  );
-                }
-              },
-            ))
-          ],
+                  ))
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-Card makeCard(Challenge challenge, BuildContext context) => Card(
+Card makeCard(Challenge challenge, BuildContext context) =>
+    Card(
       elevation: 8.0,
       margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
       child: Container(
@@ -108,7 +124,14 @@ Card makeCard(Challenge challenge, BuildContext context) => Card(
       ),
     );
 
-ListTile makeListTile(Challenge challenge, BuildContext context) => ListTile(
+ListTile placeHolderListTile() {
+  return ListTile(
+    title: Text("No ongoing exercises"),
+  );
+}
+
+ListTile makeListTile(Challenge challenge, BuildContext context) =>
+    ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
       title: Text(
         challenge.name,
