@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:monthly_music_challenge/bloc/bloc_provider.dart';
 import 'package:monthly_music_challenge/bloc/exercise_bloc.dart';
 import 'package:monthly_music_challenge/models/stats.dart';
-import 'package:monthly_music_challenge/models/session.dart';
-import 'package:monthly_music_challenge/database/DBHelper.dart';
 import 'package:provider/provider.dart';
 
 import '../consts.dart';
@@ -44,8 +41,8 @@ class _OverViewState extends State<OverView> {
         image: DecorationImage(
             colorFilter: ColorFilter.mode(
                 Consts.backgroundColorDark.withOpacity(0.4), BlendMode.dstATop),
-            image: NetworkImage(
-                "https://images.unsplash.com/photo-1457052002176-2d16a4f4a3ff?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1650&q=80"),
+            image: AssetImage(
+                "assets/images/guitar-bg.jpeg"),
             fit: BoxFit.cover),
         borderRadius: BorderRadius.only(bottomLeft: Radius.circular(100)),
       ),
@@ -68,7 +65,7 @@ class _OverViewState extends State<OverView> {
 
   _cardColumn() {
     return Positioned(
-      top: 0,
+      bottom: MediaQuery.of(context).size.height * 0.2,
       child: Container(
         margin: EdgeInsets.fromLTRB(20, 10, 40, 10),
         child: StreamBuilder<Object>(
