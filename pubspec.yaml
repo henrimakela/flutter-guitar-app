@@ -18,6 +18,10 @@ dependencies:
   charts_flutter: ^0.6.0
   flutter_circular_chart:
   path_provider: '>=0.3.0'
+  font_awesome_flutter: 8.4.0
+  flutter_circular_slider: 2.5.0
+  rxdart: 0.22.6
+  provider: 3.2.0
   sqflite: any
 
   # The following adds the Cupertino Icons font to your application.

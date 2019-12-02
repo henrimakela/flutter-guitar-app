@@ -10,6 +10,9 @@ import 'package:monthly_music_challenge/models/challenge.dart';
 class DBHelper {
   static Database _db;
 
+  int _SORT_BY_PROGRESS = 1;
+  int _SORT_BY_NAME = 2;
+
   Future<Database> get db async {
     if (_db != null) return _db;
     _db = await initDb();
@@ -30,6 +33,14 @@ class DBHelper {
 
     await db.execute(
         "CREATE TABLE Session(id INTEGER PRIMARY KEY, duration INTEGER, date TEXT)");
+    int completedMinutes = 0;
+    int goalMinutes  = 60;
+    await db.rawInsert("INSERT INTO Challenge(name, description, completedMinutes, goalMinutes) VALUES('Strumming patterns', 'Practice different kinds of strumming patterns', $completedMinutes, $goalMinutes )");
+    await db.rawInsert("INSERT INTO Challenge(name, description, completedMinutes, goalMinutes) VALUES('Rhythm', 'Practice your rhythm with a metronome', $completedMinutes, $goalMinutes )");
+    await db.rawInsert("INSERT INTO Challenge(name, description, completedMinutes, goalMinutes) VALUES('Picking accuracy', 'Hone your picking accuracy by going up and down different scales', $completedMinutes, $goalMinutes )");
+    await db.rawInsert("INSERT INTO Challenge(name, description, completedMinutes, goalMinutes) VALUES('Songs', 'Practice songs you like', $completedMinutes, $goalMinutes )");
+    await db.rawInsert("INSERT INTO Challenge(name, description, completedMinutes, goalMinutes) VALUES('Fingerpicking', 'Get better with your fingerpicking skills and dexterity', $completedMinutes, $goalMinutes )");
+    await db.rawInsert("INSERT INTO Challenge(name, description, completedMinutes, goalMinutes) VALUES('Chord progressions', 'Create and train chord progressions', $completedMinutes, $goalMinutes )");
   }
 
   Future<Challenge> getCurrentChallenge() async {
@@ -47,9 +58,16 @@ class DBHelper {
     return challenges[0];
   }
 
-  Future<List<Challenge>> getAllChallenges() async {
+  Future<List<Challenge>> getAllChallenges({bool sortByProgress}) async {
     var dbClient = await db;
-    List<Map> list = await dbClient.rawQuery('SELECT * FROM Challenge');
+    List<Map> list;
+    if(sortByProgress){
+      list = await dbClient.rawQuery('SELECT * FROM Challenge ORDER BY completedMinutes DESC');
+    }
+    else{
+      list = await dbClient.rawQuery('SELECT * FROM Challenge ORDER BY name ASC');
+    }
+
     List<Challenge> challenges = new List();
     for (int i = 0; i < list.length; i++) {
       challenges.add(new Challenge(
@@ -92,12 +110,8 @@ class DBHelper {
 
   Future<int> getTotalTime() async {
     var dbClient = await db;
-    int totalMinutes = 0;
-    List<Map> list = await dbClient.rawQuery('SELECT * FROM Challenge');
-    for (int i = 0; i < list.length; i++) {
-      totalMinutes += list[i]["completedMinutes"];
-    }
-    return totalMinutes;
+    List<Map> list = await dbClient.rawQuery('SELECT SUM(completedMinutes) FROM Challenge');
+    return Sqflite.firstIntValue(list);
   }
 
   Future<List<Session>> getAllSessions() async {
@@ -110,6 +124,21 @@ class DBHelper {
     }
 
     return sessions;
+  }
+
+  Future<double> getSessionDurationAVG() async {
+    var dbClient = await db;
+    var x =
+        await dbClient.rawQuery("SELECT AVG(duration) as average FROM Session");
+
+    return x[0]["average"];
+  }
+
+  Future<int> getSessionCount() async {
+    var dbClient = await db;
+    var x = await dbClient.rawQuery("SELECT COUNT (*) FROM Session");
+
+    return Sqflite.firstIntValue(x);
   }
 
   Future<Challenge> getChallengeById(int id) async {
