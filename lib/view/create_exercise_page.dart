@@ -27,6 +27,7 @@ class CreateExercisePageState extends State<CreateExercisePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomPadding: true,
         backgroundColor: Consts.backgroundColorDark,
         appBar: AppBar(
           backgroundColor: Consts.backgroundColorDark,
@@ -37,91 +38,94 @@ class CreateExercisePageState extends State<CreateExercisePage> {
 
   _showExeGenerator() {
     return SafeArea(
-      child: Container(
-          margin: EdgeInsets.all(20),
-          child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  Text(
-                    "How long would you like to play guitar?",
-                    style: TextStyle(fontSize: 16, color: Colors.white),
-                  ),
-                  Center(
-                    child: SingleCircularSlider(
-                      60,
-                      1,
-                      height: 240,
-                      width: 240,
-                      baseColor: baseColor,
-                      primarySectors: 6,
-                      secondarySectors: 60,
-                      selectionColor: Consts.greenColor,
-                      onSelectionChange: _updateDuration,
-                      handlerColor: Colors.white,
-                      handlerOutterRadius: 12.0,
-                      sliderStrokeWidth: 12.0,
-                      shouldCountLaps: true,
-                      child: Padding(
-                        padding: const EdgeInsets.all(42.0),
-                        child: Center(
-                            child: Text(_formatTime(challenge.goalMinutes),
+      child: Builder(
+          builder: (BuildContext context) {
+            return Container(
+                margin: EdgeInsets.fromLTRB(20, 20,20,0),
+                child: Form(
+                    key: _formKey,
+                    child: ListView(
+                      children: <Widget>[
+                        Center(
+                          child: Text(
+                            "How long would you like to play guitar?",
+                            style: TextStyle(fontSize: 16, color: Colors.white),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 50,
+                        ),
+                        Center(
+                          child: SingleCircularSlider(
+                            60,
+                            1,
+                            height: 240,
+                            width: 240,
+                            baseColor: baseColor,
+                            primarySectors: 6,
+                            secondarySectors: 60,
+                            selectionColor: Consts.greenColor,
+                            onSelectionChange: _updateDuration,
+                            handlerColor: Colors.white,
+                            handlerOutterRadius: 12.0,
+                            sliderStrokeWidth: 12.0,
+                            shouldCountLaps: true,
+                            child: Padding(
+                              padding: const EdgeInsets.all(42.0),
+                              child: Center(
+                                  child: Text(_formatTime(challenge.goalMinutes),
+                                      style: TextStyle(
+                                          fontSize: 36.0, color: Colors.white))),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 40,),
+                        TextFormField(
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return "Enter name";
+                            }
+                            return null;
+                          },
+                          decoration: _inputDecoration("Name of the exercise"),
+                          onSaved: (String value) {
+                            challenge.name = value;
+                          },
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        TextFormField(
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return "Enter description";
+                            }
+                            return null;
+                          },
+                          decoration: _inputDecoration("Description"),
+                          onSaved: (String value) {
+                            challenge.description = value;
+                          },
+                        ),
+                        SizedBox(height: 60,),
+                        MaterialButton(
+                            height: 50,
+                            minWidth: 250,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30)),
+                            onPressed: () {
+                              submit(context);
+                            },
+                            color: Colors.white,
+                            child: Text("Save",
                                 style: TextStyle(
-                                    fontSize: 36.0, color: Colors.white))),
-                      ),
-                    ),
-                  ),
-                  Column(
-                    children: <Widget>[
-                      TextFormField(
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return "Enter name";
-                          }
-                          return null;
-                        },
-                        decoration: _inputDecoration("Name of the exercise"),
-                        onSaved: (String value) {
-                          challenge.name = value;
-                        },
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      TextFormField(
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return "Enter description";
-                          }
-                          return null;
-                        },
-                        decoration: _inputDecoration("Description"),
-                        onSaved: (String value) {
-                          challenge.description = value;
-                        },
-                      ),
-                    ],
-                  ),
-                  MaterialButton(
-                      height: 50,
-                      minWidth: 250,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30)),
-                      onPressed: () {
-                        if (_formKey.currentState.validate()) {
-                          submit();
-                        }
-                      },
-                      color: Colors.white,
-                      child: Text("Save",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold)))
-                ],
-              ))),
+                                    fontSize: 16, fontWeight: FontWeight.bold)))
+                      ],
+                    )));
+          }
+      ),
     );
   }
-
 
   String _formatTime(int time) {
     var hours = time / 60;
@@ -166,8 +170,8 @@ class CreateExercisePageState extends State<CreateExercisePage> {
     );
   }
 
-  void submit() async {
-    if (this._formKey.currentState.validate()) {
+  void submit(BuildContext context) async {
+    if (this._formKey.currentState.validate() && challenge.goalMinutes > 0) {
       this._formKey.currentState.save();
       challenge.completedMinutes = 0;
       Provider.of<ExerciseBloc>(context).saveExercise(challenge);
@@ -176,13 +180,17 @@ class CreateExercisePageState extends State<CreateExercisePage> {
       });
       _finish();
     }
+    else if(challenge.goalMinutes == 0){
+      final snackBar = SnackBar(content: Text('The duration cannot be 0'));
+      Scaffold.of(context).showSnackBar(snackBar);
+    }
   }
 
-  _finish()  async{
-      return new Timer(Duration(seconds: 1), _exit);
+  _finish() async {
+    return new Timer(Duration(seconds: 1), _exit);
   }
-  _exit() async{
+
+  _exit() async {
     Navigator.of(context).pop();
   }
-
 }

@@ -80,9 +80,6 @@ class ExerSearchDelegate extends SearchDelegate {
       slivers: <Widget>[
         SliverAppBar(
           automaticallyImplyLeading: false,
-          actions: <Widget>[
-            IconButton(icon: Icon(Icons.filter_list), onPressed: () {}),
-          ],
           centerTitle: true,
           pinned: true,
           expandedHeight: 240,
@@ -95,8 +92,8 @@ class ExerSearchDelegate extends SearchDelegate {
                     colorFilter: ColorFilter.mode(
                         Consts.backgroundColorDark.withOpacity(0.6),
                         BlendMode.dstATop),
-                    image: NetworkImage(
-                        "https://images.unsplash.com/photo-1457052002176-2d16a4f4a3ff?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1650&q=80"),
+                    image: AssetImage(
+                        "assets/images/guitar-bg.jpeg"),
                     fit: BoxFit.cover),
               ),
             ),
@@ -143,8 +140,7 @@ class ExerSearchDelegate extends SearchDelegate {
                 ),
                 Row(
                   children: <Widget>[
-                    Container(
-                      width: 300,
+                    Expanded(
                       child: LinearProgressIndicator(
                           backgroundColor: Consts.greenTransparent,
                           value: calculateProgress(challenge),

@@ -13,6 +13,7 @@ void main() => runApp(GuitarApp());
 
 /*
 * Logo
+* Duration cannot be 0
 *
 *
 *
